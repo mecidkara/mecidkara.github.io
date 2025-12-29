@@ -1,0 +1,48 @@
+:root { --primary: #f39c12; --dark: #1e272e; --bg: #f4f7f6; }
+* { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
+.hidden { display: none !important; }
+
+/* AUTH VE GEÇİŞLER */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+.auth-card { background: white; padding: 25px; border-radius: 24px; width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); text-align: center; }
+.auth-card.login-mode { width: 350px; }
+.auth-card.login-mode .register-only { display: none; }
+.auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
+.auth-card.login-mode .auth-grid { grid-template-columns: 1fr; }
+
+.brand { font-size: 30px; font-weight: 800; }
+.brand span { color: var(--primary); }
+.profile-upload img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; }
+.toggle-link { color: var(--primary); cursor: pointer; font-size: 13px; font-weight: 700; margin-top: 15px; text-decoration: underline; }
+
+/* PANEL YAPISI */
+.layout { display: flex; height: 100vh; }
+.sidebar { width: 260px; background: var(--dark); color: white; padding: 20px; display: flex; flex-direction: column; }
+.user-box { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin: 15px 0; }
+.user-box img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); }
+.main-content { flex: 1; padding: 25px; overflow-y: auto; }
+
+/* CHAT */
+.messenger { display: flex; background: white; height: calc(100vh - 180px); border-radius: 15px; overflow: hidden; }
+.chat-area { flex: 1; display: flex; flex-direction: column; }
+.chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.bubble { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; }
+.bubble.in { background: #eee; align-self: flex-start; }
+.bubble.out { background: var(--primary); color: white; align-self: flex-end; }
+.approval-box { background: #fff5e6; padding: 15px; text-align: center; border-top: 2px solid var(--primary); font-weight: bold; }
+
+/* BUTONLAR VE GRID */
+.btn-primary { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+.btn-primary.full { width: 100%; margin-top: 10px; }
+.btn-exit { background: #e74c3c; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.btn-row { display: flex; gap: 10px; margin-top: 20px; }
+.btn-row button { flex: 1; }
+.menu-btn { width: 100%; padding: 12px; background: none; border: none; color: #888; text-align: left; cursor: pointer; font-weight: 600; }
+.menu-btn.active { background: var(--primary); color: white; }
+.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+.card { background: white; padding: 15px; border-radius: 15px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+.input-field { display: flex; flex-direction: column; gap: 4px; }
+.input-field label { font-size: 10px; font-weight: 800; color: #777; text-transform: uppercase; }
+.input-field input, .input-field select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+.full-width { grid-column: span 2; }
