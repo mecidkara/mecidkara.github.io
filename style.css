@@ -46,3 +46,21 @@ body { margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
 .input-field label { font-size: 10px; font-weight: 800; color: #777; text-transform: uppercase; }
 .input-field input, .input-field select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
 .full-width { grid-column: span 2; }
+
+/* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+@media screen and (max-width: 768px) {
+    .auth-card { width: 90% !important; padding: 20px; max-height: 90vh; overflow-y: auto; }
+    .auth-grid { grid-template-columns: 1fr; }
+    .layout { flex-direction: column; }
+    .sidebar { position: fixed; bottom: 0; left: 0; width: 100%; height: auto; flex-direction: row; justify-content: space-around; align-items: center; padding: 10px; background: white; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .sidebar .brand-side, .sidebar .user-box, .sidebar .sidebar-footer { display: none; }
+    .sidebar nav { display: flex; width: 100%; justify-content: space-around; }
+    .menu-btn { text-align: center; font-size: 12px; padding: 8px; border-radius: 8px; background: transparent; color: #888; }
+    .menu-btn.active { background: var(--primary); color: white; }
+    .main-content { padding: 15px; padding-bottom: 80px; width: 100%; }
+    .grid-container { grid-template-columns: 1fr; }
+    .messenger { flex-direction: column; height: calc(100vh - 140px); }
+    .contact-list { display: none; }
+    .chat-area { width: 100%; }
+    .auth-card[style*="width: 380px"] { width: 90% !important; }
+}

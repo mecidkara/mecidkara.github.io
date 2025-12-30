@@ -1,14 +1,65 @@
+// --- AYARLAR VE VERİTABANI ---
+// Versiyonu v2 yaptık ki temiz bir başlangıç olsun
+const DB_KEY = 'logitrans_db_v2'; 
+const USER_KEY = 'logitrans_active_user';
 let isRegisterMode = true;
-const DATA = {
+let currentUser = null;
+
+// Varsayılan boş veriler
+const DEFAULT_DATA = {
     loads: [
         { id: 1, route: "Ankara ➔ İzmir", p: "22.500 TL", type: "Sanayi", weight: "24 Ton" },
         { id: 2, route: "İstanbul ➔ Antalya", p: "19.000 TL", type: "Gıda", weight: "18 Ton" }
     ],
-    myAds: []
+    myAds: [],
+    messages: [],
+    users: [] // Kullanıcı bilgileri burada saklanacak
 };
+
+// Veriyi çek veya oluştur
+let DATA = JSON.parse(localStorage.getItem(DB_KEY)) || DEFAULT_DATA;
 let selectedLoad = null;
 
-// --- AUTH MANTIĞI ---
+// Sayfa açılınca oturum kontrolü
+document.addEventListener('DOMContentLoaded', () => {
+    checkSession();
+});
+
+// --- YARDIMCI FONKSİYONLAR ---
+function saveDB() {
+    localStorage.setItem(DB_KEY, JSON.stringify(DATA));
+}
+
+function saveUserSession(userObj) {
+    localStorage.setItem(USER_KEY, JSON.stringify(userObj));
+    currentUser = userObj;
+}
+
+function clearSession() {
+    localStorage.removeItem(USER_KEY);
+    location.reload();
+}
+
+function checkSession() {
+    const savedUser = localStorage.getItem(USER_KEY);
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        
+        // Giriş yapılmışsa paneli aç
+        document.getElementById('auth-layer').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        
+        document.getElementById('nav-name').innerText = currentUser.name || currentUser.username;
+        document.getElementById('nav-phone').innerText = currentUser.phone || "Sürücü";
+        if(currentUser.address) document.getElementById('nav-address').innerText = "📍 " + currentUser.address;
+        if(currentUser.avatar) document.getElementById('nav-avatar').src = currentUser.avatar;
+        
+        renderLoads();
+        renderMyAds();
+    }
+}
+
+// --- KAYIT VE GİRİŞ (GÜVENLİKLİ) ---
 function toggleAuthMode() {
     isRegisterMode = !isRegisterMode;
     const card = document.getElementById('auth-card');
@@ -30,33 +81,53 @@ function toggleAuthMode() {
 }
 
 function handleSubmit() {
-    const user = document.getElementById('reg-username').value;
-    if (!user) return alert("Kullanıcı adı boş bırakılamaz!");
+    const username = document.getElementById('reg-username').value;
+    const password = document.getElementById('reg-password').value;
+
+    if (!username || !password) return alert("Kullanıcı adı ve şifre zorunludur!");
+
+    let activeUser = null;
 
     if (isRegisterMode) {
+        // --- KAYIT ---
+        // Kullanıcı adı kontrolü
+        const existingUser = DATA.users.find(u => u.username === username);
+        if (existingUser) return alert("Bu kullanıcı adı zaten alınmış!");
+
         const name = document.getElementById('reg-fullname').value;
         const tc = document.getElementById('reg-tc').value;
         const phone = document.getElementById('reg-phone').value;
         const address = document.getElementById('reg-address').value;
+        const vehicle = document.getElementById('reg-vehicle').value;
+        const avatarSrc = document.getElementById('user-preview').src;
 
         if (!name || tc.length !== 11 || !phone || !address) {
-            return alert("Lütfen kurumsal kayıt için tüm alanları doldurun!");
+            return alert("Lütfen tüm alanları doldurun!");
         }
-        document.getElementById('nav-name').innerText = name;
-        document.getElementById('nav-phone').innerText = phone;
-        document.getElementById('nav-address').innerText = "📍 " + address;
+
+        activeUser = { 
+            username, password, name, tc, phone, address, vehicle, avatar: avatarSrc, type: 'driver' 
+        };
+
+        DATA.users.push(activeUser);
+        saveDB();
+        alert("Kayıt Başarılı!");
+
     } else {
-        document.getElementById('nav-name').innerText = user;
-        document.getElementById('nav-phone').innerText = "Kayıtlı Sürücü";
+        // --- GİRİŞ (ŞİFRE KONTROLLÜ) ---
+        const foundUser = DATA.users.find(u => u.username === username && u.password === password);
+        
+        if (!foundUser) {
+            return alert("Hatalı kullanıcı adı veya şifre!");
+        }
+        activeUser = foundUser;
     }
 
-    document.getElementById('nav-avatar').src = document.getElementById('user-preview').src;
-    document.getElementById('auth-layer').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    renderLoads();
+    saveUserSession(activeUser);
+    checkSession();
 }
 
-// --- YÜK VE İLAN YÖNETİMİ ---
+// --- İŞLEMLER ---
 function renderLoads() {
     document.getElementById('load-grid').innerHTML = DATA.loads.map(l => `
         <div class="card">
@@ -69,21 +140,41 @@ function renderLoads() {
 function saveAd() {
     const route = document.getElementById('ad-route').value;
     const date = document.getElementById('ad-date').value;
-    if(!route || !date) return alert("Lütfen detayları girin!");
-    DATA.myAds.push({ route, date });
+    if(!route || !date) return alert("Eksik bilgi!");
+
+    DATA.myAds.push({ id: Date.now(), route, date, owner: currentUser.username });
+    saveDB();
     renderMyAds();
     closeModal('ad-modal');
 }
 
 function renderMyAds() {
-    document.getElementById('my-ads-grid').innerHTML = DATA.myAds.map(ad => `
+    const container = document.getElementById('my-ads-grid');
+    // Sadece kendi ilanlarını gör
+    const myAds = DATA.myAds.filter(ad => ad.owner === currentUser.username);
+
+    if(myAds.length === 0) {
+        container.innerHTML = "<p style='padding:10px; color:#999;'>Henüz ilanınız yok.</p>";
+        return;
+    }
+
+    container.innerHTML = myAds.map(ad => `
         <div class="card" style="border-left-color:#3498db">
-            <h3>${ad.route}</h3><p>📅 Tarih: ${ad.date}</p>
+            <h3>${ad.route}</h3><p>📅 ${ad.date}</p>
+            <button onclick="deleteAd(${ad.id})" style="color:red; border:none; background:none; cursor:pointer; float:right;">Sil 🗑️</button>
         </div>
     `).join('');
 }
 
-// --- MESAJLAR VE ONAY ---
+function deleteAd(id) {
+    if(confirm("Silmek istiyor musunuz?")) {
+        DATA.myAds = DATA.myAds.filter(ad => ad.id !== id);
+        saveDB();
+        renderMyAds();
+    }
+}
+
+// --- DİĞER FONKSİYONLAR ---
 function openOfferModal(id) {
     selectedLoad = DATA.loads.find(l => l.id === id);
     document.getElementById('offer-title').innerText = selectedLoad.route;
@@ -95,26 +186,23 @@ function confirmOffer() {
     closeModal('offer-modal');
     switchTab('messages', document.getElementById('btn-messages'));
     const chatBox = document.getElementById('chat-box');
-    chatBox.innerHTML = `<div class="bubble in"><b>Sistem:</b> Teklifiniz iletildi.</div>
-                         <div class="bubble out">Yük için hazırım kaptan.</div>`;
+    chatBox.innerHTML = `<div class="bubble in"><b>Sistem:</b> Teklif iletildi.</div><div class="bubble out">Hazırım.</div>`;
     setTimeout(() => {
-        chatBox.innerHTML += `<div class="bubble in">Teklifini onayladım, işi başlatmak için son onayı verir misin?</div>`;
+        chatBox.innerHTML += `<div class="bubble in">Onaylandı, işi başlat?</div>`;
         document.getElementById('approval-panel').classList.remove('hidden');
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }, 2000);
+    }, 1500);
 }
 
 function completeDeal() {
     document.getElementById('approval-panel').classList.add('hidden');
-    document.getElementById('chat-box').innerHTML += `<div class="bubble in" style="background:#d4edda; color:#155724; align-self:center; width:90%; text-align:center;">✅ İŞ KARŞILIKLI ONAYLANDI!</div>`;
+    document.getElementById('chat-box').innerHTML += `<div class="bubble in" style="background:#d4edda; color:#155724; align-self:center;">✅ İŞ BAŞLADI!</div>`;
 }
 
-// --- GENEL ---
 function switchTab(id, btn) {
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     document.getElementById('tab-' + id).classList.remove('hidden');
     document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
 }
 
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
