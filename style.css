@@ -1,11 +1,37 @@
-:root { --primary: #f39c12; --dark: #1e272e; --bg: #f4f7f6; }
+/* --- TEMEL RENK DEĞİŞKENLERİ --- */
+:root {
+    --primary: #f39c12;
+    --bg-color: #f4f7f6;
+    --card-bg: #ffffff;
+    --text-color: #1e272e;
+    --sidebar-bg: #1e272e;
+    --sidebar-text: #ffffff;
+    --input-bg: #ffffff;
+    --input-border: #ddd;
+    --chat-in: #eee;
+    --chat-active: #eef2f5;
+}
+
+/* DARK MODE */
+body.dark-mode {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --sidebar-bg: #000000;
+    --sidebar-text: #ccc;
+    --input-bg: #2d2d2d;
+    --input-border: #444;
+    --chat-in: #333;
+    --chat-active: #333;
+}
+
 * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
+body { margin: 0; background: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; transition: background 0.3s, color 0.3s; }
 .hidden { display: none !important; }
 
-/* AUTH VE GEÇİŞLER */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
-.auth-card { background: white; padding: 25px; border-radius: 24px; width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); text-align: center; }
+/* AUTH */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+.auth-card { background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 24px; width: 480px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); text-align: center; }
 .auth-card.login-mode { width: 350px; }
 .auth-card.login-mode .register-only { display: none; }
 .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
@@ -16,23 +42,30 @@ body { margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
 .profile-upload img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; }
 .toggle-link { color: var(--primary); cursor: pointer; font-size: 13px; font-weight: 700; margin-top: 15px; text-decoration: underline; }
 
-/* PANEL YAPISI */
+/* LAYOUT */
 .layout { display: flex; height: 100vh; }
-.sidebar { width: 260px; background: var(--dark); color: white; padding: 20px; display: flex; flex-direction: column; }
+.sidebar { width: 260px; background: var(--sidebar-bg); color: var(--sidebar-text); padding: 20px; display: flex; flex-direction: column; transition: background 0.3s; }
 .user-box { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin: 15px 0; }
 .user-box img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); }
 .main-content { flex: 1; padding: 25px; overflow-y: auto; }
 
-/* CHAT */
-.messenger { display: flex; background: white; height: calc(100vh - 180px); border-radius: 15px; overflow: hidden; }
-.chat-area { flex: 1; display: flex; flex-direction: column; }
-.chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-.bubble { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; }
-.bubble.in { background: #eee; align-self: flex-start; }
-.bubble.out { background: var(--primary); color: white; align-self: flex-end; }
-.approval-box { background: #fff5e6; padding: 15px; text-align: center; border-top: 2px solid var(--primary); font-weight: bold; }
+/* CHAT & ARKADAŞ LİSTESİ */
+.messenger { display: flex; background: var(--card-bg); height: calc(100vh - 140px); border-radius: 15px; overflow: hidden; border: 1px solid var(--input-border); }
+.contact-list { width: 250px; border-right: 1px solid var(--input-border); overflow-y: auto; background: var(--bg-color); }
+.contact-header { padding: 15px; font-weight: bold; border-bottom: 1px solid var(--input-border); display: flex; justify-content: space-between; align-items: center; }
+.contact-item { padding: 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--input-border); transition: 0.2s; }
+.contact-item:hover, .contact-item.active { background: var(--chat-active); }
+.contact-item img { width: 35px; height: 35px; border-radius: 50%; }
 
-/* BUTONLAR VE GRID */
+.chat-area { flex: 1; display: flex; flex-direction: column; }
+.chat-header { padding: 15px; border-bottom: 1px solid var(--input-border); font-weight: bold; background: var(--chat-active); }
+.chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.chat-input { padding: 15px; border-top: 1px solid var(--input-border); display: flex; gap: 10px; }
+.bubble { padding: 10px 15px; border-radius: 15px; max-width: 75%; font-size: 14px; }
+.bubble.in { background: var(--chat-in); color: var(--text-color); align-self: flex-start; }
+.bubble.out { background: var(--primary); color: white; align-self: flex-end; }
+
+/* UI ELEMENTS */
 .btn-primary { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; }
 .btn-primary.full { width: 100%; margin-top: 10px; }
 .btn-exit { background: #e74c3c; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
@@ -40,27 +73,30 @@ body { margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
 .btn-row button { flex: 1; }
 .menu-btn { width: 100%; padding: 12px; background: none; border: none; color: #888; text-align: left; cursor: pointer; font-weight: 600; }
 .menu-btn.active { background: var(--primary); color: white; }
-.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
-.card { background: white; padding: 15px; border-radius: 15px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-.input-field { display: flex; flex-direction: column; gap: 4px; }
-.input-field label { font-size: 10px; font-weight: 800; color: #777; text-transform: uppercase; }
-.input-field input, .input-field select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-.full-width { grid-column: span 2; }
+.grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+.card { background: var(--card-bg); color: var(--text-color); padding: 15px; border-radius: 15px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: background 0.3s; }
 
-/* --- MOBİL UYUMLULUK (RESPONSIVE) --- */
+.input-field { display: flex; flex-direction: column; gap: 4px; }
+.input-field label { font-size: 10px; font-weight: 800; color: var(--text-color); opacity: 0.7; text-transform: uppercase; }
+.input-field input, .input-field select { padding: 10px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-color); border-radius: 8px; outline: none; }
+.full-width { grid-column: span 2; }
+.theme-switch-box { display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 10px; border-radius: 10px; margin-bottom: 15px; }
+.btn-theme { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--text-color); background: var(--card-bg); color: var(--text-color); cursor: pointer; }
+
+/* RESPONSIVE */
 @media screen and (max-width: 768px) {
     .auth-card { width: 90% !important; padding: 20px; max-height: 90vh; overflow-y: auto; }
     .auth-grid { grid-template-columns: 1fr; }
     .layout { flex-direction: column; }
-    .sidebar { position: fixed; bottom: 0; left: 0; width: 100%; height: auto; flex-direction: row; justify-content: space-around; align-items: center; padding: 10px; background: white; border-top: 1px solid #eee; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .sidebar { position: fixed; bottom: 0; left: 0; width: 100%; height: auto; flex-direction: row; justify-content: space-around; align-items: center; padding: 5px; background: var(--card-bg); border-top: 1px solid var(--input-border); z-index: 1000; }
     .sidebar .brand-side, .sidebar .user-box, .sidebar .sidebar-footer { display: none; }
     .sidebar nav { display: flex; width: 100%; justify-content: space-around; }
-    .menu-btn { text-align: center; font-size: 12px; padding: 8px; border-radius: 8px; background: transparent; color: #888; }
-    .menu-btn.active { background: var(--primary); color: white; }
+    .menu-btn { text-align: center; font-size: 11px; padding: 5px; border-radius: 8px; background: transparent; color: var(--text-color); opacity: 0.6; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .menu-btn.active { background: var(--primary); color: white; opacity: 1; }
     .main-content { padding: 15px; padding-bottom: 80px; width: 100%; }
-    .grid-container { grid-template-columns: 1fr; }
     .messenger { flex-direction: column; height: calc(100vh - 140px); }
-    .contact-list { display: none; }
-    .chat-area { width: 100%; }
-    .auth-card[style*="width: 380px"] { width: 90% !important; }
+    .contact-list { width: 100%; height: 120px; border-right: none; border-bottom: 1px solid var(--input-border); display: flex; flex-direction: column; }
+    .contact-item { padding: 10px; }
+    .chat-area { flex: 1; }
+    .auth-card[style*="width:"] { width: 90% !important; }
 }
