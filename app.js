@@ -1,6 +1,4 @@
-// --- VERİTABANI SİMÜLASYONU ---
-
-// 1. Örnek İller ve İlçeler (Veritabanı niyetine)
+// --- VERİTABANI SİMÜLASYONU (ŞEHİRLER VE İLÇELER) ---
 const citiesData = {
     "İstanbul": ["Kadıköy", "Esenyurt", "Pendik", "Beşiktaş", "Tuzla", "Başakşehir"],
     "Ankara": ["Çankaya", "Mamak", "Keçiören", "Yenimahalle", "Sincan"],
@@ -11,8 +9,7 @@ const citiesData = {
     "Konya": ["Selçuklu", "Meram", "Karatay"]
 };
 
-// 2. Mevcut Yükler (Varsayılan İlanlar)
-// isFriend: true ise arkadaşız, false ise değiliz.
+// --- MEVCUT YÜK İLANLARI (MOCK DATA) ---
 let loads = [
     { 
         id: 1, 
@@ -62,7 +59,7 @@ window.onload = () => {
     populateCitySelects();     // Şehir listelerini (select) doldur
 };
 
-// --- YÜKLERİ EKRANA BASMA (HTML Üretme) ---
+// --- YÜKLERİ HTML OLARAK OLUŞTURMA ---
 const container = document.getElementById('loadContainer');
 const countLabel = document.getElementById('resultCount');
 
@@ -76,7 +73,7 @@ function renderLoads(data) {
     }
 
     data.forEach(load => {
-        // Arkadaşlık butonu durumu (Eğer arkadaşsa 'Arkadaşın', değilse 'Ekle' butonu)
+        // Arkadaşlık durumu kontrolü
         const friendBtn = load.isFriend 
             ? `<button class="btn-friend added"><i class="fa-solid fa-user-check"></i> Arkadaşın</button>` 
             : `<button class="btn-friend" onclick="addFriend(${load.id})"><i class="fa-solid fa-user-plus"></i> Takip Et</button>`;
@@ -107,11 +104,9 @@ function renderLoads(data) {
     });
 }
 
-// --- İL / İLÇE SİSTEMİ MANTIĞI ---
+// --- ŞEHİR VE İLÇE SEÇİM MANTIĞI ---
 function populateCitySelects() {
     const citySelects = [document.getElementById('inputCityFrom'), document.getElementById('inputCityTo')];
-    
-    // Verimizdeki şehir isimlerini alıyoruz ["İstanbul", "Ankara" ...]
     const cityNames = Object.keys(citiesData);
 
     citySelects.forEach(select => {
@@ -124,17 +119,15 @@ function populateCitySelects() {
     });
 }
 
-// Şehir seçilince ilçeleri dolduran fonksiyon
 function loadDistricts(citySelectId, districtSelectId) {
     const citySelect = document.getElementById(citySelectId);
     const districtSelect = document.getElementById(districtSelectId);
     const selectedCity = citySelect.value;
 
-    // Önce eski ilçeleri temizle
     districtSelect.innerHTML = '<option value="">İlçe Seçin</option>';
 
     if (selectedCity && citiesData[selectedCity]) {
-        districtSelect.disabled = false; // Kilidi aç
+        districtSelect.disabled = false;
         citiesData[selectedCity].forEach(dist => {
             let option = document.createElement("option");
             option.value = dist;
@@ -142,18 +135,17 @@ function loadDistricts(citySelectId, districtSelectId) {
             districtSelect.appendChild(option);
         });
     } else {
-        districtSelect.disabled = true; // Şehir seçili değilse kilitle
+        districtSelect.disabled = true;
     }
 }
 
-// --- YENİ İLAN KAYDETME ---
+// --- YENİ İLAN KAYDETME FONKSİYONU ---
 function saveLoad(e) {
-    e.preventDefault(); // Sayfanın yenilenmesini engelle
+    e.preventDefault(); 
 
-    // Formdaki verileri alıp yeni bir obje oluşturuyoruz
     const newLoad = {
         id: loads.length + 1,
-        company: "Benim Lojistik A.Ş.", // Varsayılan kullanıcı firması
+        company: "Benim Lojistik A.Ş.", 
         fromCity: document.getElementById('inputCityFrom').value,
         fromDist: document.getElementById('inputDistrictFrom').value,
         toCity: document.getElementById('inputCityTo').value,
@@ -161,64 +153,31 @@ function saveLoad(e) {
         address: document.getElementById('inputAddressFrom').value,
         type: document.getElementById('inputType').value,
         price: document.getElementById('inputPrice').value,
-        isFriend: true // Kendi ilanımız olduğu için dostuz :)
+        isFriend: true
     };
 
-    // Yeni ilanı listenin EN BAŞINA ekle (unshift)
-    loads.unshift(newLoad);
-    
-    // Ekranı güncelle
-    renderLoads(loads);
-    
-    // Modalı kapat ve başarı mesajı ver
-    closeAddModal();
+    loads.unshift(newLoad); // Listeye ekle
+    renderLoads(loads);     // Ekranı güncelle
+    closeAddModal();        // Formu kapat
     openModal("İlanınız başarıyla yayınlandı!");
     
-    // Formu temizle
+    // Formu sıfırla
     document.getElementById('addLoadForm').reset();
     document.getElementById('inputDistrictFrom').disabled = true;
     document.getElementById('inputDistrictTo').disabled = true;
 }
 
-// --- ARKADAŞ EKLEME ---
+// --- ARKADAŞ EKLEME FONKSİYONU ---
 function addFriend(id) {
     const load = loads.find(l => l.id === id);
     if (load) {
         load.isFriend = true;
-        renderLoads(loads); // Ekranı yenile ki buton değişsin
+        renderLoads(loads); 
         openModal(`${load.company} arkadaş listenize eklendi!`);
     }
 }
 
-// --- MODAL AÇMA / KAPAMA İŞLEMLERİ ---
-const msgModal = document.getElementById('customModal');
-const addModal = document.getElementById('addLoadModal');
-const msgText = document.getElementById('modalMessage');
-
-function openModal(message) {
-    msgText.innerText = message;
-    msgModal.style.display = 'flex';
-}
-
-function closeModal() {
-    msgModal.style.display = 'none';
-}
-
-function openAddModal() {
-    addModal.style.display = 'flex';
-}
-
-function closeAddModal() {
-    addModal.style.display = 'none';
-}
-
-// Modal dışına tıklayınca kapanması için
-window.onclick = function(event) {
-    if (event.target == msgModal) closeModal();
-    if (event.target == addModal) closeAddModal();
-}
-
-// --- FİLTRELEME ---
+// --- FİLTRELEME FONKSİYONU ---
 function filterLoads() {
     const fromVal = document.getElementById('filterFrom').value.toLowerCase();
     const toVal = document.getElementById('filterTo').value.toLowerCase();
@@ -233,4 +192,24 @@ function filterLoads() {
     });
 
     renderLoads(filtered);
+}
+
+// --- MODAL AÇMA / KAPAMA YARDIMCILARI ---
+const msgModal = document.getElementById('customModal');
+const addModal = document.getElementById('addLoadModal');
+const msgText = document.getElementById('modalMessage');
+
+function openModal(message) {
+    msgText.innerText = message;
+    msgModal.style.display = 'flex';
+}
+
+function closeModal() { msgModal.style.display = 'none'; }
+function openAddModal() { addModal.style.display = 'flex'; }
+function closeAddModal() { addModal.style.display = 'none'; }
+
+// Dışarı tıklayınca kapatma
+window.onclick = function(event) {
+    if (event.target == msgModal) closeModal();
+    if (event.target == addModal) closeAddModal();
 }

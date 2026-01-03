@@ -1,3 +1,4 @@
+/* --- TEMEL AYARLAR --- */
 :root {
     --primary: #FF6B00; /* Lojistik Turuncusu */
     --secondary: #1a1a2e; /* Koyu Lacivert */
@@ -67,26 +68,13 @@ header {
     letter-spacing: 1px;
 }
 
+/* --- MENÜ VE BUTONLAR --- */
 .user-menu {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.profile-link {
-    color: white;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-}
-
-.profile-link:hover {
-    color: var(--primary);
-}
-
-/* --- BUTONLAR --- */
 .btn-primary {
     background: var(--primary);
     color: white;
@@ -107,17 +95,30 @@ header {
     transform: scale(1.05);
 }
 
-/* --- CONTAINER --- */
+.profile-link {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.profile-link:hover {
+    color: var(--primary);
+}
+
+/* --- GENEL DÜZEN (LAYOUT) --- */
 .container {
     max-width: 1200px;
     margin: 20px auto;
     padding: 0 15px;
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 300px 1fr; /* Sol 300px, Sağ kalan alan */
     gap: 20px;
 }
 
-/* --- SOL PANEL (FİLTRELER) --- */
+/* --- SOL PANEL (SIDEBAR) --- */
 .sidebar {
     background: white;
     padding: 20px;
@@ -167,7 +168,7 @@ header {
     background-color: var(--primary);
 }
 
-/* --- SAĞ PANEL (YÜK LİSTESİ) --- */
+/* --- SAĞ PANEL (İLAN LİSTESİ) --- */
 .load-list-header {
     background: white;
     padding: 20px;
@@ -189,7 +190,7 @@ header {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     transition: transform 0.2s;
     border-left: 5px solid var(--primary);
-    flex-wrap: wrap; /* Mobilde taşmayı önler */
+    flex-wrap: wrap; 
 }
 
 .load-card:hover {
@@ -197,7 +198,7 @@ header {
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* Kart İçi Düzenlemeler */
+/* Kart İçeriği */
 .card-header-mobile {
     width: 100%;
     display: flex;
@@ -334,7 +335,6 @@ header {
     animation: slideDown 0.3s ease-out;
 }
 
-/* Geniş Modal (İlan Ekleme İçin) */
 .large-modal {
     width: 550px;
     max-width: 90%;
@@ -350,7 +350,6 @@ header {
     padding-bottom: 10px;
 }
 
-/* Form Elemanları */
 .form-row {
     display: flex;
     gap: 15px;
@@ -382,11 +381,6 @@ header {
 
 .form-group textarea {
     resize: vertical;
-}
-
-@keyframes slideDown {
-    from { transform: translateY(-50px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
 }
 
 .modal-icon {
@@ -431,7 +425,12 @@ header {
     color: #999;
 }
 
-/* Responsive */
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* --- MOBİL UYUMLULUK (Responsive) --- */
 @media (max-width: 768px) {
     .container { grid-template-columns: 1fr; }
     .load-card { flex-direction: column; text-align: center; gap: 15px; }
@@ -439,5 +438,5 @@ header {
     .specs { align-items: center; width: 100%; }
     .action-area { width: 100%; align-items: center; margin-top: 10px;}
     .form-row { flex-direction: column; gap: 0; }
-    .logo-text small { display: none; } /* Mobilde küçük yazıyı gizle */
+    .logo-text small { display: none; }
 }
