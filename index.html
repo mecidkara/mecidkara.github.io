@@ -3,178 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LogiTrans Pro | Lojistik Ağı</title>
+    <title>YükümNeredeee | Lojistik Ağı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="auth-layer" class="overlay">
-        <div id="auth-card" class="auth-card register-mode">
-            <div class="brand">Logi<span>Trans</span></div>
-            <p id="auth-subtitle">Kurumsal Sürücü & Lojistik Ağı</p>
-            
-            <div class="profile-upload register-only" onclick="document.getElementById('image-input').click()">
-                <img id="user-preview" src="https://www.w3schools.com/howto/img_avatar.png">
-                <span>Fotoğraf Seç</span>
-                <input type="file" id="image-input" hidden accept="image/*">
+    <header>
+        <a href="#" class="logo">
+            <div class="logo-img">
+                <i class="fa-solid fa-truck-fast"></i>
             </div>
-
-            <div class="auth-grid">
-                <div class="input-field register-only"><label>Ad Soyad</label><input type="text" id="reg-fullname" placeholder="Ad Soyad"></div>
-                <div class="input-field register-only"><label>TC Kimlik</label><input type="text" id="reg-tc" maxlength="11"></div>
-                <div class="input-field register-only"><label>Telefon</label><input type="tel" id="reg-phone"></div>
-                
-                <div class="input-field"><label>Kullanıcı Adı</label><input type="text" id="reg-username" placeholder="Örn: kaptan"></div>
-                <div class="input-field"><label>Şifre</label><input type="password" id="reg-password"></div>
-                
-                <div class="input-field register-only">
-                    <label>Araç / Firma Tipi</label>
-                    <select id="reg-vehicle">
-                        <option>Tır - 13.60 Frigo</option>
-                        <option>Tır - 13.60 Tenteli</option>
-                        <option>Onteker - Kapalı</option>
-                        <option>Kamyonet / Panelvan</option>
-                        <option>Lojistik Firması</option>
-                    </select>
-                </div>
-                <div class="input-field full-width register-only">
-                    <label>Garaj / Merkez Adresi</label>
-                    <input type="text" id="reg-address">
-                </div>
+            <div class="logo-text">
+                Yüküm<span>Neredeee</span>
+                <small>Lojistik & Arkadaşlık Platformu</small>
             </div>
-
-            <button class="btn-primary full" id="auth-submit-btn" onclick="handleSubmit()">Kayıt Ol ve Gir</button>
-            <p id="toggle-auth-text" class="toggle-link" onclick="toggleAuthMode()">Zaten hesabınız var mı? Giriş Yap</p>
+        </a>
+        
+        <div class="user-menu">
+            <button class="btn-primary" onclick="openAddModal()"><i class="fa-solid fa-plus"></i> İlan Yayınla</button>
+            <a href="#" class="profile-link"><i class="fa-solid fa-user-circle"></i> Hesabım</a>
         </div>
-    </div>
+    </header>
 
-    <div id="dashboard" class="layout hidden">
+    <div class="container">
+        
         <aside class="sidebar">
-            <div class="brand-side">Logi<span>Trans</span></div>
-            <div class="user-box">
-                <img id="nav-avatar" src="">
-                <div class="u-info">
-                    <strong id="nav-name">-</strong>
-                    <small id="nav-tag" style="color:#f39c12; font-weight:bold; letter-spacing:1px;">#0000</small>
-                </div>
+            <h3><i class="fa-solid fa-filter"></i> Filtrele</h3>
+            
+            <div class="filter-group">
+                <label>Çıkış Şehri</label>
+                <input type="text" id="filterFrom" placeholder="Örn: İstanbul">
             </div>
-            <nav>
-                <button class="menu-btn active" onclick="switchTab('loads', this)">📦 Yük Havuzu</button>
-                <button class="menu-btn" onclick="switchTab('my-ads', this)">🚛 İlanlarım</button>
-                <button class="menu-btn" id="btn-messages" onclick="switchTab('messages', this)">💬 Mesajlar</button>
-                <button class="menu-btn" onclick="openSettings()">⚙️ Ayarlar</button>
-            </nav>
-            <div class="sidebar-footer">
-                <button class="btn-exit" onclick="clearSession()">Çıkış Yap</button>
+
+            <div class="filter-group">
+                <label>Varış Şehri</label>
+                <input type="text" id="filterTo" placeholder="Örn: Ankara">
             </div>
+
+            <div class="filter-group">
+                <label>Kasa Tipi</label>
+                <select id="filterType">
+                    <option value="all">Tümü</option>
+                    <option value="Tenteli">Tenteli</option>
+                    <option value="Frigo">Frigo</option>
+                    <option value="Damper">Damper</option>
+                    <option value="Sal Kasa">Sal Kasa</option>
+                    <option value="Lowbed">Lowbed</option>
+                </select>
+            </div>
+            
+            <button class="btn-filter" onclick="filterLoads()">Sonuçları Göster</button>
         </aside>
 
-        <main class="main-content">
-            <section id="tab-loads" class="view">
-                <div class="view-header"><h2>Tüm İlanlar (Yük Havuzu)</h2></div>
-                <div id="load-grid" class="grid-container"></div>
-            </section>
+        <main>
+            <div class="load-list-header">
+                <h2>Güncel Yük İlanları</h2>
+                <span id="resultCount" style="color:var(--grey)">Yükleniyor...</span>
+            </div>
 
-            <section id="tab-my-ads" class="view hidden">
-                <div class="view-header" style="display:flex; justify-content:space-between;">
-                    <h2>Aktif İlanlarım</h2>
-                    <button class="btn-primary" onclick="openModal('ad-modal')">+ İlan Ver</button>
+            <div id="loadContainer">
                 </div>
-                <div id="my-ads-grid" class="grid-container"></div>
-            </section>
-
-            <section id="tab-messages" class="view hidden">
-                <div class="messenger">
-                    <div class="contact-list">
-                        <div class="contact-header">
-                            <span>Arkadaşlar</span>
-                            <button onclick="openModal('add-friend-modal')" style="background:#f39c12; border:none; color:white; border-radius:5px; cursor:pointer;">+ Ekle</button>
-                        </div>
-                        <div id="contact-container">
-                            </div>
-                    </div>
-                    
-                    <div class="chat-area">
-                        <div class="chat-header" id="chat-header-name">Mesajlaşma Paneli</div>
-                        <div class="chat-messages" id="chat-box">
-                            <p style="text-align:center; color:#888; margin-top:50px;">
-                                Sohbet etmek için soldan bir arkadaş seçin.<br>
-                                <small>Kimse yoksa "+ Ekle" butonuna basarak arkadaş ekleyin.</small>
-                            </p>
-                        </div>
-                        <div class="chat-input hidden" id="chat-input-area">
-                            <input type="text" id="chat-input-field" placeholder="Mesaj yaz...">
-                            <button class="btn-primary" onclick="sendMessage()">Gönder</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </main>
     </div>
 
-    <div id="ad-modal" class="overlay hidden">
-        <div class="auth-card" style="width: 400px;">
-            <h2>Yeni Yük İlanı Oluştur</h2>
-            <div class="auth-grid" style="margin-top:10px;">
-                <div class="input-field"><label>Nereden</label><input type="text" id="ad-from" placeholder="İstanbul"></div>
-                <div class="input-field"><label>Nereye</label><input type="text" id="ad-to" placeholder="Ankara"></div>
-                <div class="input-field full-width"><label>Yük / Araç Tipi</label>
-                    <select id="ad-type">
-                        <option>Paletli Yük (Kuru)</option>
-                        <option>Gıda (Frigo)</option>
-                        <option>Dökme Yük</option>
-                        <option>İş Makinesi</option>
-                        <option>Evden Eve</option>
-                    </select>
+    <div class="modal-overlay" id="addLoadModal">
+        <div class="modal-box large-modal">
+            <span class="close-modal" onclick="closeAddModal()">&times;</span>
+            <h3>Yeni Yük İlanı Oluştur</h3>
+            
+            <form id="addLoadForm" onsubmit="saveLoad(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nereden (İl)</label>
+                        <select id="inputCityFrom" onchange="loadDistricts('inputCityFrom', 'inputDistrictFrom')" required>
+                            <option value="">Şehir Seçin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>İlçe</label>
+                        <select id="inputDistrictFrom" required disabled>
+                            <option value="">Önce İl Seçin</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="input-field"><label>Ağırlık (Ton)</label><input type="text" id="ad-weight" placeholder="24 Ton"></div>
-                <div class="input-field"><label>Fiyat (TL)</label><input type="text" id="ad-price" placeholder="30.000"></div>
-                <div class="input-field full-width"><label>Yükleme Tarihi</label><input type="date" id="ad-date"></div>
-            </div>
-            <div class="btn-row">
-                <button class="btn-exit" onclick="closeModal('ad-modal')">İptal</button>
-                <button class="btn-primary" onclick="saveAd()">Yayınla</button>
-            </div>
+
+                <div class="form-group">
+                    <label>Tam Adres (Yükleme Yeri)</label>
+                    <textarea id="inputAddressFrom" rows="2" placeholder="Mahalle, sokak, kapı no, şirket adı..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nereye (İl)</label>
+                        <select id="inputCityTo" onchange="loadDistricts('inputCityTo', 'inputDistrictTo')" required>
+                            <option value="">Şehir Seçin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>İlçe</label>
+                        <select id="inputDistrictTo" required disabled>
+                            <option value="">Önce İl Seçin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Yük Tipi</label>
+                        <select id="inputType">
+                            <option value="Tenteli">Tenteli</option>
+                            <option value="Frigo">Frigo</option>
+                            <option value="Damper">Damper</option>
+                            <option value="Sal Kasa">Sal Kasa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tonaj / Fiyat</label>
+                        <input type="text" id="inputPrice" placeholder="Örn: 25.000 TL" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="modal-btn" style="width:100%; margin-top:10px;">İlanı Yayınla</button>
+            </form>
         </div>
     </div>
 
-    <div id="add-friend-modal" class="overlay hidden">
-        <div class="auth-card" style="width: 350px;">
-            <h2>Arkadaş Ekle</h2>
-            <p style="font-size:13px; color:#888;">Arkadaşınızın kullanıcı adını ve etiketini girin.</p>
-            <div class="input-field">
-                <label>KullanıcıAdı#Etiket (Örn: mecid#1234)</label>
-                <input type="text" id="friend-tag-input" placeholder="isim#0000">
-            </div>
-            <div class="btn-row">
-                <button class="btn-exit" onclick="closeModal('add-friend-modal')">Kapat</button>
-                <button class="btn-primary" onclick="addFriend()">Arkadaş Ekle</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="settings-modal" class="overlay hidden">
-        <div class="auth-card" style="width: 400px;">
-            <h2>Ayarlar</h2>
-            <div class="theme-switch-box">
-                <span>Görünüm Modu:</span>
-                <button id="theme-btn" class="btn-theme" onclick="toggleTheme()">☀️ Açık Mod</button>
-            </div>
-            <div class="profile-upload" onclick="document.getElementById('edit-image-input').click()">
-                <img id="edit-preview" src="">
-                <span style="font-size:12px; background:var(--bg-color); padding:2px 8px; border-radius:10px;">Fotoğrafı Değiştir</span>
-                <input type="file" id="edit-image-input" hidden accept="image/*">
-            </div>
-            <div class="auth-grid" style="grid-template-columns: 1fr; margin-top:15px;">
-                <div class="input-field"><label>Ad Soyad</label><input type="text" id="edit-name"></div>
-                <div class="input-field"><label>Telefon</label><input type="tel" id="edit-phone"></div>
-                <div class="input-field"><label>Yeni Şifre</label><input type="password" id="edit-password" placeholder="Değiştirmek için yazın..."></div>
-            </div>
-            <div class="btn-row">
-                <button class="btn-exit" onclick="closeModal('settings-modal')">Vazgeç</button>
-                <button class="btn-primary" onclick="saveSettings()">Kaydet</button>
-            </div>
+    <div class="modal-overlay" id="customModal">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-icon"><i class="fa-solid fa-check-circle"></i></div>
+            <h3 class="modal-title">İşlem Başarılı!</h3>
+            <p class="modal-text" id="modalMessage">Mesaj</p>
+            <button class="modal-btn" onclick="closeModal()">Tamam</button>
         </div>
     </div>
 
