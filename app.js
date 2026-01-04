@@ -1,126 +1,143 @@
-// 1. İLLER VE İLÇELER VERİTABANI
-const locationData = {
-    "Adana": ["Seyhan", "Çukurova", "Yüreğir", "Sarıçam"],
-    "Ankara": ["Çankaya", "Keçiören", "Mamak", "Yenimahalle", "Etimesgut", "Sincan"],
-    "Antalya": ["Muratpaşa", "Kepez", "Konyaaltı", "Alanya", "Manavgat"],
-    "Bursa": ["Osmangazi", "Nilüfer", "Yıldırım", "Gemlik"],
-    "İstanbul": ["Kadıköy", "Beşiktaş", "Üsküdar", "Fatih", "Şişli", "Maltepe", "Pendik", "Esenyurt"],
-    "İzmir": ["Konak", "Karşıyaka", "Bornova", "Buca", "Çiğli"],
-    "Trabzon": ["Ortahisar", "Akçaabat"],
-    "Samsun": ["İlkadım", "Atakum"],
-    "Van": ["İpekyolu", "Tuşba"]
-};
+// Firebase Kütüphanelerini İçe Aktarıyoruz (İnternetten çekiyor)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// Sayfa yüklendiğinde İlleri Doldur
-document.addEventListener("DOMContentLoaded", () => {
-    const citySelect = document.getElementById("citySelect");
-    for (let city in locationData) {
-        let option = document.createElement("option");
-        option.text = city;
-        option.value = city;
-        citySelect.add(option);
-    }
-    
-    // Arkadaş listesini doldur
-    loadFriends();
+// --- 1. ADIM: FIREBASE AYARLARI ---
+// Firebase Konsolundan aldığın "const firebaseConfig" kodunu AŞAĞIYA YAPIŞTIR:
+const firebaseConfig = {
+    apiKey: "SENIN_API_KEYIN_BURAYA",
+    authDomain: "SENIN_PROJEN.firebaseapp.com",
+    projectId: "SENIN_PROJEN",
+    storageBucket: "SENIN_PROJEN.appspot.com",
+    messagingSenderId: "SAYILAR",
+    appId: "SAYILAR"
+};
+// ----------------------------------
+
+// Firebase'i Başlat
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// --- HTML ELEMENTLERİNİ SEÇ ---
+const loginScreen = document.getElementById('login-screen');
+const registerScreen = document.getElementById('register-screen');
+const mainApp = document.getElementById('main-app');
+const userInfoText = document.getElementById('user-info');
+
+// --- BUTON TIKLAMA OLAYLARI (Event Listeners) ---
+// Butonların çalışmama sebebi HTML'de onclick kullanmaktı.
+// Modül sisteminde addEventListener kullanılır:
+
+// Sayfa Geçişleri
+document.getElementById('btnShowRegister').addEventListener('click', () => {
+    loginScreen.classList.add('hidden');
+    registerScreen.classList.remove('hidden');
 });
 
-// İlçeleri Getir
-function loadDistricts() {
-    const citySelect = document.getElementById("citySelect");
-    const districtSelect = document.getElementById("districtSelect");
-    const selectedCity = citySelect.value;
-    
-    districtSelect.innerHTML = '<option value="">Seçiniz...</option>';
+document.getElementById('btnShowLogin').addEventListener('click', () => {
+    registerScreen.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+});
 
-    if (selectedCity && locationData[selectedCity]) {
+// Kayıt Ol (Email/Şifre)
+document.getElementById('btnRegister').addEventListener('click', () => {
+    const email = document.getElementById('reg-email').value;
+    const pass = document.getElementById('reg-pass').value;
+    createUserWithEmailAndPassword(auth, email, pass)
+        .then((userCredential) => {
+            alert("Kayıt Başarılı! Hoşgeldin: " + userCredential.user.email);
+        })
+        .catch((error) => {
+            alert("Hata: " + error.message);
+        });
+});
+
+// Giriş Yap (Email/Şifre)
+document.getElementById('btnLogin').addEventListener('click', () => {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-pass').value;
+    signInWithEmailAndPassword(auth, email, pass)
+        .catch((error) => {
+            alert("Giriş Hatası: " + error.message);
+        });
+});
+
+// Google ile Giriş
+document.getElementById('btnGoogle').addEventListener('click', () => {
+    signInWithPopup(auth, provider)
+        .catch((error) => {
+            alert("Google Giriş Hatası: " + error.message);
+        });
+});
+
+// Çıkış Yap
+document.getElementById('btnLogout').addEventListener('click', () => {
+    signOut(auth);
+});
+
+// --- KULLANICI DURUMUNU DİNLE ---
+// Kullanıcı giriş yaptığında veya çıktığında bu kod otomatik çalışır
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Kullanıcı Giriş Yapmış
+        loginScreen.classList.add('hidden');
+        registerScreen.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+        userInfoText.innerText = "Giriş Yapan: " + user.email;
+    } else {
+        // Kullanıcı Çıkış Yapmış
+        mainApp.classList.add('hidden');
+        loginScreen.classList.remove('hidden');
+    }
+});
+
+// --- DİĞER FONKSİYONLAR (İl/İlçe, Tema) ---
+const locationData = {
+    "İstanbul": ["Kadıköy", "Beşiktaş", "Şişli"],
+    "Ankara": ["Çankaya", "Keçiören", "Mamak"],
+    "İzmir": ["Konak", "Karşıyaka", "Buca"]
+};
+
+// İlleri Yükle
+const citySelect = document.getElementById("citySelect");
+for (let city in locationData) {
+    let option = document.createElement("option");
+    option.text = city;
+    option.value = city;
+    citySelect.add(option);
+}
+
+// İlçe Değişimi
+citySelect.addEventListener('change', () => {
+    const districtSelect = document.getElementById("districtSelect");
+    const city = citySelect.value;
+    districtSelect.innerHTML = '<option value="">Seçiniz...</option>';
+    
+    if(city && locationData[city]) {
         districtSelect.disabled = false;
-        locationData[selectedCity].forEach(dist => {
-            let option = document.createElement("option");
-            option.text = dist;
-            districtSelect.add(option);
+        locationData[city].forEach(d => {
+            let opt = document.createElement("option");
+            opt.text = d;
+            districtSelect.add(opt);
         });
     } else {
         districtSelect.disabled = true;
     }
-}
+});
 
-// 2. GİRİŞ SİSTEMİ
-function showRegister() {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('register-screen').classList.remove('hidden');
-}
+// Tema Değişimi
+document.getElementById('theme-toggle').addEventListener('change', (e) => {
+    if(e.target.checked) document.body.setAttribute('data-theme', 'dark');
+    else document.body.removeAttribute('data-theme');
+});
 
-function showLogin() {
-    document.getElementById('register-screen').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-}
-
-function login() {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
-}
-
-function registerUser() {
-    alert("Kayıt Başarılı! Giriş yapılıyor...");
-    login();
-}
-
-function googleLogin() {
-    alert("Google Hesabı Seçme Ekranı Açılıyor... (Simülasyon)");
-    login();
-}
-
-function logout() {
-    document.getElementById('main-app').classList.add('hidden');
-    document.getElementById('login-screen').classList.remove('hidden');
-    switchTab('home');
-}
-
-// 3. SEKMELER ARASI GEÇİŞ
-function switchTab(tabName) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(tabName + '-page').classList.add('active');
-
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    
-    if(tabName === 'home') document.querySelectorAll('.nav-item')[0].classList.add('active');
-    if(tabName === 'friends') document.querySelectorAll('.nav-item')[1].classList.add('active');
-    if(tabName === 'settings') document.querySelectorAll('.nav-item')[2].classList.add('active');
-}
-
-// 4. ARKADAŞ LİSTESİ
-function loadFriends() {
-    const friends = [
-        { name: "Ahmet Yılmaz", status: "Çevrimiçi", img: "A" },
-        { name: "Ayşe Demir", status: "10 dk önce", img: "A" },
-        { name: "Mehmet Çelik", status: "Çevrimdışı", img: "M" },
-        { name: "Zeynep Kaya", status: "Çevrimiçi", img: "Z" }
-    ];
-
-    const friendListContainer = document.getElementById("friend-list");
-    friends.forEach(friend => {
-        friendListContainer.innerHTML += `
-            <div class="list-item">
-                <div style="display:flex; align-items:center;">
-                    <div class="avatar">${friend.img}</div>
-                    <div>
-                        <div style="font-weight:bold;">${friend.name}</div>
-                        <div style="font-size:12px; color:gray;">${friend.status}</div>
-                    </div>
-                </div>
-                <i class="fas fa-comment-dots" style="color:var(--primary-color); font-size:20px;"></i>
-            </div>
-        `;
-    });
-}
-
-// 5. KOYU TEMA
-function toggleTheme() {
-    const isDark = document.getElementById('theme-toggle').checked;
-    if (isDark) {
-        document.body.setAttribute('data-theme', 'dark');
-    } else {
-        document.body.removeAttribute('data-theme');
-    }
-}
+// Navigasyon
+document.getElementById('nav-home').addEventListener('click', () => {
+    document.getElementById('home-page').classList.add('active');
+    document.getElementById('settings-page').classList.remove('active');
+});
+document.getElementById('nav-settings').addEventListener('click', () => {
+    document.getElementById('home-page').classList.remove('active');
+    document.getElementById('settings-page').classList.add('active');
+});
