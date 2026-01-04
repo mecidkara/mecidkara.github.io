@@ -3,59 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Okul Projesi</title>
+    <title>Sosyal Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="login-container" class="container">
-        <h2>Giriş Yap</h2>
-        <input type="email" id="login-email" placeholder="E-posta Adresi">
-        <input type="password" id="login-pass" placeholder="Şifre">
-        <button class="btn-primary" id="btn-login">Giriş Yap</button>
-        <button class="btn-google" id="btn-google-login">Google ile Giriş</button>
+    <div class="app-container">
         
-        <div class="toggle-text">
-            Üye değil misin? <span id="to-register">Hemen Kayıt Ol</span>
-        </div>
-    </div>
-
-    <div id="register-container" class="container hidden">
-        <h2>Kayıt Ol</h2>
-        <input type="text" id="reg-name" placeholder="Ad Soyad">
-        <input type="text" id="reg-username" placeholder="Kullanıcı Adı (Örn: Ali)">
-        <input type="email" id="reg-email" placeholder="E-posta">
-        <input type="tel" id="reg-phone" placeholder="Telefon No">
-        <input type="text" id="reg-address" placeholder="Adres">
-        <input type="password" id="reg-pass" placeholder="Şifre (Min 6 hane)">
-        
-        <button class="btn-primary" id="btn-register">Üye Ol ve Kod Al</button>
-        <button class="btn-google" id="btn-google-register">Google ile Kayıt</button>
-
-        <div class="toggle-text">
-            Hesabın var mı? <span id="to-login">Giriş Yap</span>
-        </div>
-    </div>
-
-    <div id="dashboard" class="container hidden">
-        <h2>Hoşgeldin!</h2>
-        <div class="profile-box">
-            <h3 id="user-display-name">Yükleniyor...</h3>
-            <p>Arkadaşlık kodun yukarıdadır.</p>
+        <div id="login-screen" class="auth-screen">
+            <div class="auth-logo"><i class="fab fa-connectdevelop"></i></div>
+            <h2>Giriş Yap</h2>
+            <input type="email" id="login-email" placeholder="E-Posta veya Telefon">
+            <input type="password" id="login-pass" placeholder="Şifre">
+            <button class="btn btn-primary" onclick="login()">Giriş Yap</button>
+            <button class="btn btn-google" onclick="googleLogin()"><i class="fab fa-google"></i> Google ile Giriş</button>
+            <p style="margin-top: 20px;">Hesabın yok mu?</p>
+            <button class="btn btn-secondary" onclick="showRegister()">Yeni Hesap Oluştur</button>
         </div>
 
-        <div class="friend-box">
-            <h4>Arkadaş Ekle</h4>
-            <div class="input-group">
-                <input type="text" id="friend-code" placeholder="Örn: Veli#9876">
-                <button class="btn-primary" id="btn-add-friend">Ekle</button>
+        <div id="register-screen" class="auth-screen hidden">
+            <div class="auth-logo"><i class="fas fa-user-plus"></i></div>
+            <h2>Kaydol</h2>
+            <input type="text" placeholder="Ad Soyad">
+            <input type="email" placeholder="E-Posta">
+            <input type="password" placeholder="Şifre">
+            <button class="btn btn-secondary" onclick="registerUser()">Kaydol</button>
+            <button class="btn btn-google" onclick="googleLogin()"><i class="fab fa-google"></i> Google ile Kaydol</button>
+            <p style="margin-top: 20px;">Zaten hesabın var mı?</p>
+            <button class="btn btn-link" onclick="showLogin()">Giriş Yap</button>
+        </div>
+
+        <div id="main-app" class="hidden">
+            
+            <div id="home-page" class="page active">
+                <div class="header">Ana Sayfa <i class="fas fa-map-marker-alt"></i></div>
+                
+                <p>Bulunduğunuz konumu seçin:</p>
+                <label>İl Seçiniz:</label>
+                <select id="citySelect" onchange="loadDistricts()" class="form-select">
+                    <option value="">Seçiniz...</option>
+                </select>
+
+                <label>İlçe Seçiniz:</label>
+                <select id="districtSelect" disabled class="form-select">
+                    <option value="">Önce İl Seçin</option>
+                </select>
+
+                <div class="feed-box">
+                    <h4><i class="fas fa-rss"></i> Akış</h4>
+                    <p>Burada arkadaşlarınızın paylaşımları görünecek...</p>
+                </div>
+            </div>
+
+            <div id="friends-page" class="page">
+                <div class="header">
+                    Arkadaşlarım
+                    <button class="btn-small"><i class="fas fa-plus"></i> Ekle</button>
+                </div>
+                <div id="friend-list"></div>
+            </div>
+
+            <div id="settings-page" class="page">
+                <div class="header">Ayarlar</div>
+                
+                <div class="list-item">
+                    <span><i class="fas fa-moon"></i> Koyu Tema</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="list-item">
+                    <span><i class="fas fa-bell"></i> Bildirimler</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="list-item" onclick="logout()" style="cursor: pointer; color: red;">
+                    <span><i class="fas fa-sign-out-alt"></i> Çıkış Yap</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+
+            <div class="navbar">
+                <div class="nav-item active" onclick="switchTab('home')">
+                    <i class="fas fa-home"></i><span class="nav-text">Ana Sayfa</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('friends')">
+                    <i class="fas fa-user-friends"></i><span class="nav-text">Arkadaşlar</span>
+                </div>
+                <div class="nav-item" onclick="switchTab('settings')">
+                    <i class="fas fa-cog"></i><span class="nav-text">Ayarlar</span>
+                </div>
             </div>
         </div>
-        
-        <br>
-        <button class="btn-danger" id="btn-logout">Çıkış Yap</button>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,80 +1,164 @@
-/* GENEL AYARLAR */
+/* --- GENEL DEĞİŞKENLER --- */
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-color: #050505;
+    --secondary-text: #65676b;
+    --primary-color: #1877f2;
+    --input-bg: #f0f2f5;
+    --border-color: #ddd;
+    --shadow: 0 2px 4px rgba(0, 0, 0, .1);
+}
+
+/* KOYU TEMA DEĞİŞKENLERİ */
+[data-theme="dark"] {
+    --bg-color: #18191a;
+    --card-bg: #242526;
+    --text-color: #e4e6eb;
+    --secondary-text: #b0b3b8;
+    --primary-color: #2d88ff;
+    --input-bg: #3a3b3c;
+    --border-color: #3e4042;
+    --shadow: 0 2px 4px rgba(0, 0, 0, .5);
+}
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Ekranı dikey ortalar */
-}
-
-/* KUTU TASARIMI */
-.container {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    width: 350px;
-    max-width: 90%; /* Mobilde taşmayı engeller */
+    min-height: 100vh;
     transition: all 0.3s ease;
 }
 
-h2 { text-align: center; color: #333; margin-bottom: 15px; }
-
-/* INPUTLAR */
-input {
+.app-container {
     width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px; /* Daha yuvarlak köşeler */
-    box-sizing: border-box;
-    font-size: 16px; /* Mobilde okuması kolay olsun */
+    max-width: 480px;
+    background-color: var(--card-bg);
+    min-height: 100vh;
+    position: relative;
+    box-shadow: var(--shadow);
+    overflow-x: hidden;
 }
 
-/* BUTONLAR */
-button {
+/* --- GİRİŞ VE FORM --- */
+.auth-screen {
+    padding: 40px 20px;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-logo {
+    font-size: 50px;
+    color: var(--primary-color);
+    margin-bottom: 30px;
+}
+
+input, .form-select {
     width: 100%;
-    padding: 14px; /* Mobilde parmakla basması kolay olsun */
-    margin-top: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
     font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
     transition: 0.2s;
 }
 
-.btn-primary { background-color: #0084ff; color: white; }
-.btn-primary:active { background-color: #006bcf; transform: scale(0.98); }
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-google { background-color: #db4437; color: white; }
+.btn-secondary { background-color: #42b72a; color: white; }
+.btn-link { background: none; color: var(--primary-color); cursor: pointer; }
+.btn-small { font-size:14px; padding:5px 10px; background-color: var(--primary-color); color: white; border:none; border-radius: 5px; cursor: pointer; }
 
-.btn-google { background-color: #db4437; color: white; margin-top: 5px; }
-.btn-danger { background-color: #ff4d4d; color: white; }
+/* --- SAYFALAR --- */
+.page { display: none; padding: 20px; padding-bottom: 80px; animation: fadeIn 0.3s; }
+.page.active { display: block; }
 
-/* GİZLEME SINIFI */
-.hidden { display: none !important; }
-
-/* LİNKLER */
-.toggle-text { text-align: center; margin-top: 15px; font-size: 14px; }
-.toggle-text span { color: #0084ff; cursor: pointer; font-weight: bold; }
-
-/* PANEL İÇİ */
-.profile-box { background: #e7f3ff; padding: 15px; border-radius: 8px; text-align: center; border: 1px solid #0084ff; }
-.friend-box { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-
-/* MOBİL ÖZEL AYARLAR (TELEFON İÇİN) */
-@media screen and (max-width: 500px) {
-    body {
-        align-items: flex-start; /* Mobilde yukarı yaslansın */
-        padding-top: 20px;
-        background-color: white; /* Mobilde arka plan beyaz olsun */
-    }
-    .container {
-        width: 90%;
-        box-shadow: none; /* Mobilde gölgeyi kaldır, sade olsun */
-        padding: 20px;
-    }
-    h2 { font-size: 24px; }
+.header {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.feed-box { margin-top: 30px; padding: 20px; background: var(--input-bg); border-radius: 10px; }
+
+/* --- NAVBAR --- */
+.navbar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 0;
+    z-index: 1000;
+}
+
+.nav-item {
+    color: var(--secondary-text);
+    font-size: 24px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.nav-item.active { color: var(--primary-color); }
+.nav-text { font-size: 10px; display: block; }
+
+/* --- LİSTE ELEMANLARI --- */
+.list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background-color: var(--secondary-text);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 15px;
+}
+
+/* --- SWITCH BUTONU --- */
+.switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary-color); }
+input:checked + .slider:before { transform: translateX(26px); }
+
+.hidden { display: none !important; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
