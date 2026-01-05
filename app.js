@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTheme();
     loadExampleData();
     setupPhotoUpload();
+    setupRegisterPhotoUpload(); // Yeni eklenen kayıt fotoğrafı fonksiyonu
 });
 
-// === ÖZEL UYARI SİSTEMİ (GOOGLE ALERT YERİNE) ===
+// === ÖZEL UYARI SİSTEMİ ===
 function emmiUyarisi(mesaj) {
     document.getElementById('modal-msg').innerText = mesaj;
     document.getElementById('custom-alert').classList.remove('hidden-screen');
 }
-
 function closeCustomAlert() {
     document.getElementById('custom-alert').classList.add('hidden-screen');
 }
@@ -51,7 +51,7 @@ function showScreen(screenId) {
 }
 function closeUserProfile() { showScreen('app-screen'); }
 
-// === FOTOĞRAF YÜKLEME ===
+// === FOTOĞRAF YÜKLEME (PROFİL İÇİ) ===
 function setupPhotoUpload() {
     const fileInput = document.getElementById('fileInput');
     fileInput.addEventListener('change', function(e) {
@@ -71,9 +71,30 @@ function setupPhotoUpload() {
 }
 function triggerPhotoUpload() { document.getElementById('fileInput').click(); }
 
-// === AUTH & KAYIT OL ===
+// === YENİ: KAYIT OLURKEN FOTOĞRAF YÜKLEME ===
+let tempRegisterPhoto = 'https://i.pravatar.cc/150?img=11'; // Varsayılan
+
+function setupRegisterPhotoUpload() {
+    const regInput = document.getElementById('regFileInput');
+    const regPreview = document.getElementById('regPhotoPreview');
+    
+    regInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(readerEvent) {
+                tempRegisterPhoto = readerEvent.target.result; // Base64 veriyi değişkene at
+                regPreview.src = tempRegisterPhoto; // Ekranda göster
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+// === AUTH & KAYIT OL (FOTOĞRAF ENTEGRELİ) ===
 document.getElementById('registerForm').addEventListener('submit', (e) => {
     e.preventDefault();
+    
     const newUser = {
         name: document.getElementById('regName').value,
         surname: document.getElementById('regSurname').value,
@@ -82,7 +103,7 @@ document.getElementById('registerForm').addEventListener('submit', (e) => {
         address: document.getElementById('regAddress').value,
         phone: document.getElementById('regPhone').value,
         dorse: document.getElementById('regDorse').value,
-        photo: 'https://i.pravatar.cc/150?img=11',
+        photo: tempRegisterPhoto, // Seçilen fotoğrafı kaydet
         bio: 'Merhaba, ben Yükümnerdeemmi kullanıyorum!',
         isPrivate: false,
         followers: [], following: [], requests: [], posts: []
@@ -93,9 +114,16 @@ document.getElementById('registerForm').addEventListener('submit', (e) => {
         emmiUyarisi("Bu kullanıcı adı alınmış emmi, başka bul.");
         return;
     }
+    
     users.push(newUser);
     saveAllUsers(users);
-    emmiUyarisi('Kayıt Başarılı! Giriş yapabilirsin.');
+    
+    // Temizlik yapalım (bir sonraki kayıt için)
+    tempRegisterPhoto = 'https://i.pravatar.cc/150?img=11';
+    document.getElementById('regPhotoPreview').src = tempRegisterPhoto;
+    document.getElementById('registerForm').reset();
+
+    emmiUyarisi('Kayıt Başarılı! Şimdi giriş yapabilirsin.');
     showScreen('login-screen');
 });
 
@@ -114,7 +142,6 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
 });
 
 function logout() {
-    // Çıkış işlemi için confirm kullanıyoruz, alert değil.
     if(confirm('Çıkış yapmak istediğine emin misin emmi?')) {
         localStorage.removeItem('currentUser');
         location.reload();
@@ -284,7 +311,6 @@ function acceptRequest(targetUser) {
     if(!me.followers) me.followers = []; me.followers.push(targetUser);
     if(!other.following) other.following = []; other.following.push(me.username);
     updateAnyUser(me); updateAnyUser(other);
-    // Buraya confirm koydum çünkü kullanıcı bir seçim yapmalı.
     if(confirm(`${other.name} seni takip etti. Sen de takip edecek misin?`)) logicFollowUser(me.username, targetUser);
     renderMesajlar();
 }

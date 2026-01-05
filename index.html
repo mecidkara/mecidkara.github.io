@@ -37,6 +37,17 @@
     <section id="register-screen" class="hidden-screen">
         <div class="auth-box">
             <h1>Kayıt Ol</h1>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img id="regPhotoPreview" src="https://i.pravatar.cc/150?img=11" class="profile-pic-lg" style="width: 100px; height: 100px; margin-bottom: 10px;">
+                <div>
+                    <label for="regFileInput" class="btn-sm" style="cursor: pointer; padding: 5px 15px;">
+                        <i class="fa-solid fa-camera"></i> Fotoğraf Seç
+                    </label>
+                    <input type="file" id="regFileInput" accept="image/*" style="display: none;">
+                </div>
+            </div>
+
             <form id="registerForm">
                 <input type="text" id="regName" placeholder="Ad" required>
                 <input type="text" id="regSurname" placeholder="Soyad" required>
