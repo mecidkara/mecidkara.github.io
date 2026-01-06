@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#2563eb">
-    <title>Yükümnerdeemmi</title>
+    <title>Yüküm Nerde Emmi</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,21 +12,34 @@
 
     <input type="file" id="fileInput" accept="image/*" style="display: none;">
 
-    <div id="custom-alert" class="modal-overlay hidden-screen" style="z-index: 9999;">
+    <div id="custom-alert" class="modal-overlay hidden-screen">
         <div class="modal-box">
             <div class="modal-icon"><i class="fa-solid fa-circle-info"></i></div>
             <h3 id="modal-title">Emmi Diyor Ki:</h3>
-            <p id="modal-msg">Buraya uyarı gelecek...</p>
+            <p id="modal-msg">...</p>
             <button class="btn-primary" onclick="closeCustomAlert()">Tamam</button>
+        </div>
+    </div>
+
+    <div id="custom-confirm" class="modal-overlay hidden-screen">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fa-solid fa-circle-question"></i></div>
+            <h3>Emmi Soruyor:</h3>
+            <p id="confirm-msg">Emin misin?</p>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:20px;">
+                <button class="btn-primary" id="confirm-yes-btn" style="margin:0; flex:1;">Evet</button>
+                <button class="btn-danger" onclick="closeCustomConfirm()" style="margin:0; flex:1; background-color:#ef4444;">Hayır</button>
+            </div>
         </div>
     </div>
 
     <section id="login-screen" class="active-screen">
         <div class="auth-box">
-            <h1>Yükümnerdeemmi 🚚</h1>
-            <p>Hoş geldin Emmi, giriş yap bakalım.</p>
-            <form id="loginForm">
-                <input type="text" id="loginUsername" placeholder="Kullanıcı Adı" required>
+            <i class="fa-solid fa-truck-fast" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+            <h1>Yüküm Nerde<br>Emmi 🚚</h1>
+            <p style="margin-top:10px; opacity:0.7;">Nakliyecinin Dijital Durağı</p>
+            <form id="loginForm" style="margin-top:20px;">
+                <input type="text" id="loginUsername" placeholder="Kullanıcı Adı" required autocomplete="off">
                 <input type="password" id="loginPassword" placeholder="Şifre" required>
                 <button type="submit" class="btn-primary">Giriş Yap</button>
             </form>
@@ -36,37 +49,38 @@
 
     <section id="register-screen" class="hidden-screen">
         <div class="auth-box">
-            <h1>Kayıt Ol</h1>
-            
-            <div style="text-align: center; margin-bottom: 20px;">
-                <img id="regPhotoPreview" src="https://i.pravatar.cc/150?img=11" class="profile-pic-lg" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <h1>Aramıza Katıl Emmi</h1>
+            <div style="text-align: center; margin: 20px 0;">
+                <div id="regPhotoPreviewBox" class="profile-placeholder-lg">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+                <img id="regPhotoPreviewImg" class="profile-pic-lg hidden-screen">
                 <div>
-                    <label for="regFileInput" class="btn-sm" style="cursor: pointer; padding: 5px 15px;">
-                        <i class="fa-solid fa-camera"></i> Fotoğraf Seç
+                    <label for="regFileInput" class="btn-sm" style="cursor: pointer; padding: 8px 20px;">
+                        <i class="fa-solid fa-image"></i> Fotoğraf Seç
                     </label>
                     <input type="file" id="regFileInput" accept="image/*" style="display: none;">
                 </div>
             </div>
-
             <form id="registerForm">
-                <input type="text" id="regName" placeholder="Ad" required>
-                <input type="text" id="regSurname" placeholder="Soyad" required>
-                <input type="text" id="regUsername" placeholder="Kullanıcı Adı" required>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="regName" placeholder="Ad" required>
+                    <input type="text" id="regSurname" placeholder="Soyad" required>
+                </div>
+                <input type="text" id="regUsername" placeholder="Kullanıcı Adı (Küçük harf)" required autocapitalize="none">
                 <input type="password" id="regPassword" placeholder="Şifre" required>
                 <input type="text" id="regAddress" placeholder="Şehir / Bölge" required>
                 <input type="tel" id="regPhone" placeholder="Telefon Numarası" required>
-                
-                <label style="text-align:left; display:block; font-size:0.8rem; margin-top:10px; opacity:0.7;">Aracının Dorsesi Nedir?</label>
                 <select id="regDorse" required>
-                    <option value="">Seçiniz...</option>
+                    <option value="">Dorse Seç...</option>
                     <option value="Tenteli">Tenteli</option>
                     <option value="Damperli">Damperli</option>
                     <option value="Sal">Sal Kasa</option>
                     <option value="Frigo">Frigo</option>
                     <option value="Lowbed">Lowbed</option>
                     <option value="Konteyner">Konteyner</option>
+                    <option value="Yok">Aracım Yok / Lojistik</option>
                 </select>
-
                 <button type="submit" class="btn-primary">Kayıt Ol</button>
             </form>
             <p class="toggle-text">Zaten hesabın var mı? <a href="#" onclick="showScreen('login-screen')">Giriş Yap</a></p>
@@ -87,13 +101,13 @@
 
     <section id="app-screen" class="hidden-screen">
         <header>
-            <div class="logo">Yükümnerdeemmi</div>
+            <div class="logo"><i class="fa-solid fa-truck"></i> YükümNerde</div>
             <div class="user-info" onclick="renderProfil()" style="cursor: pointer;">
                 <div style="text-align: right; line-height: 1.2; margin-right: 8px;">
                     <span id="displayUsername" style="display:block; font-weight:bold; font-size: 0.9rem;">Kullanıcı</span>
-                    <small style="font-size: 0.7rem; color: var(--text-color); opacity: 0.7;">Ayarlar</small>
+                    <small style="font-size: 0.7rem; color: var(--text-color); opacity: 0.7;">Profilim</small>
                 </div>
-                <img src="" id="headerProfilePic" class="profile-pic-sm" alt="Profil">
+                <img id="headerProfilePic" class="profile-pic-sm" src="">
             </div>
         </header>
 
@@ -101,10 +115,10 @@
         </main>
 
         <nav class="bottom-nav">
-            <button onclick="renderYukBul()" class="nav-item active"><i class="fa-solid fa-truck-ramp-box"></i><span>Yük Bul</span></button>
+            <button onclick="renderYukBul()" class="nav-item active"><i class="fa-solid fa-magnifying-glass-location"></i><span>Yük Bul</span></button>
             <button onclick="renderIlanVer()" class="nav-item"><i class="fa-solid fa-circle-plus"></i><span>İlan Ver</span></button>
             <button onclick="renderMesajlar()" class="nav-item"><i class="fa-solid fa-bell"></i><span>İstekler</span></button>
-            <button onclick="renderSosyal()" class="nav-item"><i class="fa-solid fa-users"></i><span>Sosyal</span></button>
+            <button onclick="renderSosyal()" class="nav-item"><i class="fa-solid fa-users"></i><span>Emmi'ler</span></button>
         </nav>
     </section>
 
