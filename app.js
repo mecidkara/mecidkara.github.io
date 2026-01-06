@@ -12,17 +12,20 @@ let tempRegisterPhoto = '';
 // ==========================================
 // === YARDIMCI FONKSİYON: RESİM Mİ İKON MU? ===
 // ==========================================
-// Bu fonksiyon, fotoğraf varsa resmi, yoksa ikonu basar.
+// Bu fonksiyon, fotoğraf verisi varsa resmi, yoksa FontAwesome ikonunu basar.
+// Hiçbir dış link kullanmaz.
 function renderProfileImage(photoRaw, className) {
-    if (photoRaw && photoRaw.length > 20) { // Basit kontrol: Veri varsa ve uzunsa (base64 ise)
+    // Base64 verisi var mı kontrol et (basitçe uzunluk kontrolü)
+    if (photoRaw && photoRaw.length > 50) { 
         return `<img src="${photoRaw}" class="${className}" style="object-fit:cover;">`;
     }
     
-    // Fotoğraf yoksa ikon göster (CSS classlarını koruyarak div oluşturuyoruz)
+    // Fotoğraf yoksa, CSS ile gri daire ve ikon oluştur
     let iconSize = className.includes('lg') ? '4rem' : '1.2rem';
     let bgColor = document.body.classList.contains('dark-mode') ? '#374151' : '#e5e7eb';
     let iconColor = document.body.classList.contains('dark-mode') ? '#9ca3af' : '#6b7280';
     
+    // border-radius class'tan (profile-pic-sm/lg) otomatik gelir ama biz inline da garantiye alalım
     return `<div class="${className}" style="background:${bgColor}; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                 <i class="fa-solid fa-user" style="font-size:${iconSize}; color:${iconColor};"></i>
             </div>`;
@@ -156,13 +159,8 @@ function setupPhotoUpload() {
                 user.photo = await compressImage(readerEvent.target.result);
                 updateAnyUser(user);
                 emmiUyarisi("Profil fotoğrafın yüklendi!");
-                renderProfil(); 
-                // Header resmini güncelle (HTML elementini bulup değiştiriyoruz)
-                const headerImgContainer = document.querySelector('.user-info');
-                // Header içindeki eski resmi silip yenisini koymak yerine, renderProfil zaten sayfayı yenileyecek ama header sabit.
-                // Header'ı manuel güncelleyelim:
-                const oldImg = document.getElementById('headerProfilePic');
-                if(oldImg) oldImg.src = user.photo;
+                // Sayfayı yenileyerek headerdaki resmi güncelle
+                location.reload(); 
             }
             reader.readAsDataURL(file);
         }
@@ -190,7 +188,7 @@ document.getElementById('registerForm').addEventListener('submit', (e) => {
         address: document.getElementById('regAddress').value,
         phone: document.getElementById('regPhone').value,
         dorse: document.getElementById('regDorse').value,
-        photo: tempRegisterPhoto, // Boşsa boş string gider
+        photo: tempRegisterPhoto, // Boşsa boş string, URL YOK
         bio: 'Yolların ustasıyım.',
         isPrivate: false,
         followers: [], following: [], requests: [], posts: []
@@ -236,8 +234,8 @@ function loadExampleData() {
         localStorage.setItem('ilanlar', JSON.stringify(ilanlar));
     }
     if (!localStorage.getItem('users_db')) {
+        // BURADA DIŞ RESİM LİNKLERİ SİLİNDİ, HEPSİ BOŞ STRING
         const users = [
-            // Resimler (photo) artık boş string
             { username: 'ali', name: 'Ali', surname: 'Kaptan', password:'123', photo: '', dorse: 'Tenteli', isPrivate: true, bio:'Yollar benim.', followers:[], following:[], requests:[], posts:[] },
             { username: 'murat', name: 'Murat', surname: 'Lojistik', password:'123', photo: '', dorse: 'Yok', isPrivate: false, bio:'Yük bulunur.', followers:[], following:[], requests:[], posts:[] }
         ];
@@ -251,22 +249,20 @@ function initApp() {
     if(!user) { logout(); return; } 
     document.getElementById('displayUsername').innerText = user.name + ' ' + user.surname;
     
-    // Header'daki resmi özel fonksiyonumuzla değiştiremeyiz çünkü orası statik img etiketi değil, dinamik yapıcaz
-    // Ancak en kolayı: Header'daki img etiketini gizleyip div koymak yerine, 
-    // Basitçe: Eğer foto yoksa, varsayılan bir base64 placeholder koyabiliriz YA DA
-    // Header yapısını JS ile güncelleriz.
-    
+    // Header'daki profil resmi alanını güncelle
     const userInfoDiv = document.querySelector('.user-info');
-    // Mevcut img etiketini kaldırıp bizim render fonksiyonunu koyalım
+    
+    // Varsa eski img veya div elementini temizle
     const oldImg = document.getElementById('headerProfilePic');
     if(oldImg) oldImg.remove();
     
-    // Eğer daha önce eklenmiş bir dinamik div varsa onu da temizle (tekrar tekrar eklenmesin)
+    // Daha önce eklenmiş 'profile-pic-sm' classlı div varsa onu da temizle
     const existingProfileDiv = userInfoDiv.querySelector('.profile-pic-sm');
     if(existingProfileDiv) existingProfileDiv.remove();
 
-    // Yeni yapıyı ekle
-    userInfoDiv.innerHTML += renderProfileImage(user.photo, 'profile-pic-sm');
+    // Yeni yapıyı (Resim veya İkon) ekle
+    // insertAdjacentHTML kullanarak sona ekliyoruz
+    userInfoDiv.insertAdjacentHTML('beforeend', renderProfileImage(user.photo, 'profile-pic-sm'));
     
     showScreen('app-screen');
     renderYukBul();
